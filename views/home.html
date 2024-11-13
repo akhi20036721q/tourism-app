@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tourism List App</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<style>
+    :root {
+        --main-font: Arial, sans-serif;
+        --main-bg-color: #f4f4f9;
+        --primary-color: #007bff;
+        --secondary-color: #f7c8e0;
+        --accent-color: #4caf50;
+        --text-color: #333;
+        --border-radius: 8px;
+        --input-padding: 12px;
+        --input-margin: 8px 0;
+        --font-size-large: 2rem;
+        --font-size-medium: 1rem;
+    }
+
+    * {
+        font-family: var(--main-font);
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        padding: 20px;
+        background-color: var(--main-bg-color);
+        color: var(--text-color);
+    }
+
+    header {
+        font-size: var(--font-size-large);
+        font-weight: bold;
+        text-align: center;
+        margin-bottom: 20px;
+        color: var(--primary-color);
+    }
+
+    .post-form {
+        background-color: #fff;
+        border-radius: var(--border-radius);
+        padding: 20px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+    }
+
+    .post-form h2 {
+        font-size: var(--font-size-medium);
+        margin-bottom: 10px;
+        color: var(--accent-color);
+    }
+
+    .post-form input {
+        font-size: var(--font-size-medium);
+        padding: var(--input-padding);
+        margin: var(--input-margin);
+        border: 1px solid #ddd;
+        border-radius: var(--border-radius);
+        width: 100%;
+    }
+
+    .post-form button {
+        background-color: var(--primary-color);
+        color: #fff;
+        padding: var(--input-padding);
+        font-size: var(--font-size-medium);
+        border: none;
+        border-radius: var(--border-radius);
+        cursor: pointer;
+        width: 100%;
+        transition: background-color 0.3s ease;
+    }
+
+    .post-form button:hover {
+        background-color: #0056b3;
+    }
+
+    .divider {
+        background-color: var(--secondary-color);
+        padding: 10px;
+        text-align: center;
+        border-radius: var(--border-radius);
+        margin: 20px 0;
+    }
+
+    .divider p {
+        font-size: var(--font-size-large);
+        color: #fff;
+    }
+
+    .posts {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 16px;
+    }
+
+    .post {
+        background-color: #fff;
+        border-radius: var(--border-radius);
+        padding: 20px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease;
+    }
+
+    .post:hover {
+        transform: scale(1.02);
+    }
+
+    .post h2 {
+        color: var(--primary-color);
+        font-size: 1.25rem;
+        margin-bottom: 10px;
+    }
+
+    .post img {
+        height: 250px;
+        /* width: 20%; */
+        object-fit: cover;
+        border-radius: var(--border-radius);
+        margin-bottom: 10px;
+    }
+
+    .post p {
+        margin: 8px 0;
+        color: var(--text-color);
+    }
+
+    .post button {
+        background-color: var(--accent-color);
+        color: #fff;
+        padding: 8px;
+        border: none;
+        border-radius: var(--border-radius);
+        cursor: pointer;
+        font-size: 0.9rem;
+        transition: background-color 0.3s ease;
+    }
+
+    .post button:hover {
+        background-color: #388e3c;
+    }
+
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        justify-content: center;
+        align-items: center;
+    }
+
+    .modal-content {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: var(--border-radius);
+        width: 90%;
+        max-width: 400px;
+        text-align: center;
+    }
+
+    .modal-content h2 {
+        font-size: 1.5rem;
+        margin-bottom: 20px;
+        color: var(--primary-color);
+    }
+
+    .close {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #333;
+        cursor: pointer;
+        position: absolute;
+        top: 10px;
+        right: 20px;
+    }
+
+    .close:hover {
+        color: #000;
+    }
+</style>
+
+<body>
+
+    <header>Tourism List App</header>
+
+    <section class="post-form">
+        <h2>Add a New Tourism</h2>
+        <input type="text" id="title" placeholder="Title">
+        <input type="text" id="imgUrl" placeholder="Image URL">
+        <input type="text" id="location" placeholder="Location">
+        <input type="number" id="rating" placeholder="Rating (1-10)">
+        <button id="postButton">Add Tourism</button>
+    </section>
+
+    <div class="divider">
+        <p>All Spots</p>
+    </div>
+
+    <section class="posts" id="all-posts"></section>
+
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <span class="close">×</span>
+            <h2>Edit Spot</h2>
+            <input type="text" id="editTitle" placeholder="Title">
+            <input type="text" id="editImgUrl" placeholder="Image URL">
+            <input type="text" id="editLocation" placeholder="Location">
+            <input type="number" id="editRating" placeholder="Rating (1-10)">
+            <button id="saveButton">Save Changes</button>
+        </div>
+    </div>
+
+    <script>
+        const apiEndpoint = 'http://localhost:7000/api/flips'; // Centralize API URL
+
+        // Fetch and display spots
+        async function fetchSpots() {
+            try {
+                const response = await fetch(apiEndpoint);
+                const spots = await response.json();
+                displaySpots(spots);
+            } catch (error) {
+                console.error('Failed to fetch spots:', error);
+            }
+        }
+
+        // Display spot posts
+        function displaySpots(spots) {
+            const blogContainer = document.getElementById('all-posts');
+            blogContainer.innerHTML = ''; // Clear previous posts
+
+            spots.forEach(spot => {
+                createPostElement(spot);
+            });
+        }
+
+        // Create a single spot post element
+        function createPostElement(spot) {
+            const spotDiv = document.createElement('div');
+            spotDiv.classList.add('post');
+            spotDiv.innerHTML = `
+                <h2>${spot.title}</h2>
+                <img src="${spot.imgUrl}" alt="${spot.title}">
+                <p><strong>Location:</strong> ${spot.location}</p>
+                
+                <p><strong>Rating:</strong> ${spot.rating}</p>
+                <button onclick="openEditModal('${spot._id}', '${spot.title}', '${spot.imgUrl}', '${spot.location}', '${spot.rating}')">Edit</button>
+                <button onclick="deletePost('${spot._id}')">Delete</button>
+            `;
+            document.getElementById('all-posts').appendChild(spotDiv);
+        }
+
+        // Add new spot post
+        async function addPost(e) {
+            e.preventDefault();
+            const title = document.getElementById('title').value;
+            const imgUrl = document.getElementById('imgUrl').value;
+            const location = document.getElementById('location').value;
+            const rating = document.getElementById('rating').value;
+
+            try {
+                const response = await fetch(apiEndpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ title, imgUrl, location, rating })
+                });
+
+                if (response.ok) {
+                    fetchSpots();
+                    resetForm();
+                } else {
+                    console.error('Failed to add post');
+                }
+            } catch (error) {
+                console.error('Error adding post:', error);
+            }
+        }
+
+        function resetForm() {
+            document.getElementById('title').value = '';
+            document.getElementById('imgUrl').value = '';
+            document.getElementById('location').value = '';
+            document.getElementById('rating').value = '';
+        }
+
+        function openEditModal(id, title, imgUrl, location, rating) {
+            document.getElementById('editTitle').value = title;
+            document.getElementById('editImgUrl').value = imgUrl;
+            document.getElementById('editLocation').value = location;
+            document.getElementById('editRating').value = rating;
+            document.getElementById('editModal').style.display = 'flex';
+
+            document.getElementById('saveButton').onclick = (e) => updatePost(e, id);
+        }
+
+        async function updatePost(e, id) {
+            e.preventDefault();
+            const title = document.getElementById('editTitle').value;
+            const imgUrl = document.getElementById('editImgUrl').value;
+            const location = document.getElementById('editLocation').value;
+            const rating = document.getElementById('editRating').value;
+
+            try {
+                const response = await fetch(`${apiEndpoint}/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ title, imgUrl, location, rating })
+                });
+
+                if (response.ok) {
+                    document.getElementById('editModal').style.display = 'none';
+                    fetchSpots();
+                } else {
+                    console.error('Failed to update spot');
+                }
+            } catch (error) {
+                console.error('Error updating post:', error);
+            }
+        }
+
+        async function deletePost(id) {
+            try {
+                const response = await fetch(`${apiEndpoint}/${id}`, { method: 'DELETE' });
+                if (response.ok) {
+                    fetchSpots();
+                } else {
+                    console.error('Failed to delete spot');
+                }
+            } catch (error) {
+                console.error('Error deleting post:', error);
+            }
+        }
+
+        const closeModal = document.querySelector('.close');
+        closeModal.addEventListener('click', () => {
+            document.getElementById('editModal').style.display = 'none';
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('postButton').addEventListener('click', debounce(addPost, 300));
+            fetchSpots();
+        });
+
+        function debounce(func, delay) {
+            let timeoutId;
+            return function (...args) {
+                clearTimeout(timeoutId);
+                timeoutId = setTimeout(() => func.apply(this, args), delay);
+            };
+        }
+    </script>
+
+</body>
+
+</html>
